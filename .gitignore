@@ -1,0 +1,5 @@
+*.log
+*.JLs
+demo_seismic_out/
+demo_image_out/
+Manifest.toml
