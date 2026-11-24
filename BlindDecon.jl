@@ -2592,9 +2592,11 @@ end
 
 # Real data demo on the NASA InSight SEIS VBB event window of marsquake
 # S0105a (sol 105, MQS catalog v14 pick 2019-03-14T21:03:03.6Z = 1191.574 s
-# after file start; data: PDS Geosciences, GeoCSV, 20 sps, 72440 samples).
+# after file start; data: PDS Geosciences, GeoCSV, 20 sps, 48000 samples:
+# a 2400 s crop of the PDS bundle, covering the event, its coda, and the
+# lander-activity transient at t = 1997 s).
 # HONESTY NOTES baked into the prints: (a) the strongest in-band transient
-# of this hour is lander activity around t = 2000 s, NOT the quake, so a
+# of the record is lander activity around t = 2000 s, NOT the quake, so a
 # naive transient scan misfires; (b) the event is real but modest; (c)
 # band limitation is information-theoretic: PEF whitens what the band
 # carries, it cannot invent frequencies that never reached the sensor.
@@ -2624,7 +2626,7 @@ function demo_mars(csvpath::String = "", outdir::String = "demo_mars_out")
     brms = sqrt(sum(abs2, wb) / length(wb))
     @printf("  event window (512 smp): band 1.5-4 Hz rms %.1f, MAD sigma %.1f, in-band rms/sigma %.1f\n",
             brms, nmad, brms / nmad)
-    # honesty: strongest in-band transient of the whole hour
+    # honesty: strongest in-band transient of the whole record
     pad = 2000   # the GeoCSV head is a pad plateau, window 1 would be an artifact
     yb = bandpass1(y, fs, 1.5, 4.0)
     win = 512; hop = 512
@@ -2639,7 +2641,7 @@ function demo_mars(csvpath::String = "", outdir::String = "demo_mars_out")
             bestt = (i0 - 1) / fs
         end
     end
-    @printf("  strongest in-band transient of the hour: rms %.1f at t = %.0f s (NOT the quake; lander activity)\n",
+    @printf("  strongest in-band transient of the record: rms %.1f at t = %.0f s (NOT the quake; lander activity)\n",
             bestr, bestt)
     # whitening of the raw event window
     l_before = lag1(w)
@@ -2681,7 +2683,7 @@ function demo_mars(csvpath::String = "", outdir::String = "demo_mars_out")
         p
     end
     svg_traces(joinpath(outdir, "mars_s0105a.svg"),
-               [("hourly band 1.5-4 Hz rms profile (5-block groups)",
+               [("full-trace band 1.5-4 Hz rms profile (5-block groups)",
                  [("rms", "#1f77b4", prof)]),
                 ("raw event window (P pick marked by the window position)",
                  [("samples", "#d62728", w)]),
@@ -3168,7 +3170,7 @@ function selftest()
                        "xb.elyse.02.bhu.S0105a.mqs2019fddj.1.a.csv")
     if isfile(marscsv)
         ym, fsm, _ = parse_geocsv(marscsv)
-        okm = length(ym) == 72440 && fsm == 20.0
+        okm = length(ym) == 48000 && fsm == 20.0
         chk("parse_geocsv reads the InSight SEIS S0105a bundle", okm,
             @sprintf("(%d samples, %.0f sps)", length(ym), fsm))
         i1 = max(1, round(Int, (1191.574 - 20.6) * fsm))

@@ -109,7 +109,7 @@ PASS check 46: decon_hq2_multi gains SNR from redundant channels (3-channel gain
 PASS check 47: multiframe_bd2 estimates kernels better than single-frame (gaussian-frame kcorr multiframe 0.880 vs single-frame 0.671)
 PASS check 48: restart_search2 pool contains the true-scale basin (best pool kcorr 1.000 across 4 init scales)
 PASS check 49: xujia2 edge_frac improves kernel LS at moderate noise (kcorr delta 0.077)
-PASS check 50: parse_geocsv reads the InSight SEIS S0105a bundle (72440 samples, 20 sps)
+PASS check 50: parse_geocsv reads the InSight SEIS S0105a bundle (48000 samples, 20 sps)
 PASS check 51: PEF whitens the real S0105a P window (lag1 1.000 -> 0.022, specflat 0.0033 -> 0.9933)
 51 checks, 0 failed, ~5 s (plus JIT)
 ```
@@ -153,9 +153,11 @@ correlations 0.940 / 0.616 where the gaussian-frame-only single-frame run
 reaches 0.584.
 
 `demo_mars`: real seismic data. InSight SEIS, event S0105a (sol 105, the
-first detected marsquake), 72440 samples at 20 sps from the Mars Seismic
+first detected marsquake), at 20 sps from the Mars Seismic
 Catalogue v14, read directly from the bundled PDS GeoCSV file (no network
-needed). The demo bandpasses around the P pick, whitens the P window with
+needed). The bundle is a 2400 s crop of the PDS hour (48000 samples):
+it contains the event, its full coda, and the lander-activity transient
+at t = 1997 s; the full hour remains available from the PDS archive. The demo bandpasses around the P pick, whitens the P window with
 PEF (lag-1 autocorr 1.000 -> 0.022, spectral flatness 0.0033 -> 0.9933),
 estimates a 128-tap minimum-phase wavelet from the whitened window via the
 Kolmogoroff relation, and writes a 5-panel SVG. It is honest about the
@@ -226,7 +228,7 @@ plotting package involved.
 BlindDecon.jl            the whole toolkit (~3200 lines)
 examples/demo_seismic.jl wrapper
 examples/demo_image.jl   wrapper (pass your own 24-bit BMP)
-data/xb.elyse.02.bhu.S0105a.mqs2019fddj.1.a.csv  InSight SEIS S0105a bundle (PDS GeoCSV, 2.7 MB)
+data/xb.elyse.02.bhu.S0105a.mqs2019fddj.1.a.csv  InSight SEIS S0105a bundle (PDS GeoCSV, 1.8 MB)
 ```
 
 Author: Dennis Kunde (St0n89), Tarvos. License: MIT.
